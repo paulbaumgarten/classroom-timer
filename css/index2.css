@@ -1,0 +1,27 @@
+html, body {
+    height: 100%;   
+    background: rgba(0,0,0);
+    font-family: 'Roboto', 'Verdana', sans-serif;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    color: white;
+}
+
+.current_date, .current_time, .next_alarm {
+    font-family: 'Roboto', 'Verdana', sans-serif;
+    font-size: 12vh;
+    letter-spacing: -0.1em;
+}
+
+.main-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas: 
+        "label time";
+  }
+  
+.label { grid-area: label; text-align: center; }
+.time { grid-area: time; text-align: center; }

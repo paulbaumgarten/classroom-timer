@@ -15,7 +15,7 @@ const WARNING2 = "#dd0404";
 const FOREGROUND = "#ffffff";
 const DAY_OVER_FOREGROUND = "#515151";
 
-let lastChime = -1; // timeCode (seconds of day) of the last alarm that we chimed for
+let lastChime = -1; 
 let chimesEnabled = true;
 let mode = "timer";
 
