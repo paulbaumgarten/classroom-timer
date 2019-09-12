@@ -108,7 +108,7 @@ function displayCountdown(current_alarm_seconds_remaining, current_alarm_time) {
 	if (current_alarm_seconds_remaining < 180) {
 		document.body.style.backgroundColor = WARNING2;
 		if (lastChime !== current_alarm_time) {
-			playChime("chime.mp3");
+			playChime("media/chime.mp3");
 			lastChime = current_alarm_time;
 		}
 	} else if (current_alarm_seconds_remaining < 360) {
@@ -205,7 +205,7 @@ function displayEditDetails() {
 		html += "      <td>";
 		for (let key = 0; key<alarms[day].length; key++) {
 			html += "         "+String(secondsToTimeString(alarms[day][key]));
-			html += "<button onClick=\"removeAlarm(this);\" data-day=\""+day+"\" data-alarm=\""+alarms[day][key]+"\" class=\"button_remove\"><img src=\"icons8-delete_sign.png\" alt=\"Remove\"></button><br>\n";
+			html += "<button onClick=\"removeAlarm(this);\" data-day=\""+day+"\" data-alarm=\""+alarms[day][key]+"\" class=\"button_remove\"><img src=\"img/icons8-delete_sign.png\" alt=\"Remove\"></button><br>\n";
 		}
 		html += "      </td>";
 	}
