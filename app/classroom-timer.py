@@ -79,7 +79,6 @@ class TimerApp():
     def tick(self):
         now = datetime.now()
         seconds_since_midnight = (now - now.replace(hour=0, minute=0, second=0, microsecond=0)).total_seconds()
-        seconds_since_midnight = seconds_since_midnight - 60*60*9
         current_session = 0
         while (current_session < len(self.times)) and (seconds_since_midnight > self.times[current_session]["seconds"]):
             current_session += 1 
