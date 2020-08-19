@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>classroomTimer by Paul Baumgarten</title>
+	<link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+	<link href="css/index.css" rel="stylesheet">
+</head>
+<body>
+
+	<div class="main-container">
+		<div class="current_date">{current_date}</div>
+		<div class="current_time">{current_time}</div>
+		<div class="main">00:00</div>
+		<div class="reserved">
+			<input type="button" value="edit" id="edit_button" class="edit_button">
+		</div>
+		<div class="next_alarm_group">
+			<span class="next_alarm"></span>
+		</div>
+	</div>
+
+    <div class="edit-container">
+        <p>The following alarm times are active on this computer.</p>
+        <div id="alarms-list">
+        </div>
+        <div>
+            <label for="new">Insert new: </label>
+			<input type="time" name="new" id="new-alarm"><button id="button_add"><img src="img/icons8-plus.png" alt="Add"></button>
+        </div>
+		<div>&nbsp;</div>
+		<div><input type="button" id="save_button" value="Save and close"></div>
+		<div>&nbsp;</div>
+		<div>or, quick load presets for the following schools:</div>
+		<div>&nbsp;</div>
+		<div id="presets"></div>
+	</div>
+
+</body>
+<script type="text/javascript" src="js/howler.min.js"></script>
+<script type="text/javascript" src="js/index.js"></script>
+</html>

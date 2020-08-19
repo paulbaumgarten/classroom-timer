@@ -4,39 +4,228 @@
     <meta charset="utf-8">
     <title>classroomTimer by Paul Baumgarten</title>
 	<link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
-	<link href="css/index.css" rel="stylesheet">
+	<style>
+/* Styling */
+html, body {
+    height: 100%;   
+    background: rgba(0,0,0);
+    font-family: 'Roboto', 'Verdana', sans-serif;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    color: white;
+}
+
+.nowTime, .nowName, .nextTime, .nextName {
+	font-size: 10vh; 
+	text-align: left;
+	padding-top: 0.3em;
+	padding-bottom: 0.3em;
+}
+
+.nextTime, .nextName { 
+	background-color: #333333; 
+	color: #d0d080;
+}
+
+.countdown {
+	font-size: 20vw;
+}
+
+/* Layout */
+.grid-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  grid-template-rows: 1fr 3fr 1fr;
+  gap: 1px 1px;
+  grid-template-areas: "nowTime nowName nowName nowName" "countdown countdown countdown countdown" "nextTime nextName nextName nextName";
+  width: 100%;
+  height: 100%;
+}
+
+.countdown { grid-area: countdown; }
+
+.nowTime { grid-area: nowTime; }
+
+.nowName { grid-area: nowName; }
+
+.nextTime { grid-area: nextTime; }
+
+.nextName { grid-area: nextName; }
+	</style>
 </head>
 <body>
 
-	<div class="main-container">
-		<div class="current_date">{current_date}</div>
-		<div class="current_time">{current_time}</div>
-		<div class="main">00:00</div>
-		<div class="reserved">
-			<input type="button" value="edit" id="edit_button" class="edit_button">
-		</div>
-		<div class="next_alarm_group">
-			<span class="next_alarm"></span>
-		</div>
+	<div class="grid-container" style="display:none;">
+		<div class="countdown"></div>
+		<div class="nowTime"></div>
+		<div class="nowName"></div>
+		<div class="nextTime"></div>
+		<div class="nextName"></div>
 	</div>
-
-    <div class="edit-container">
-        <p>The following alarm times are active on this computer.</p>
-        <div id="alarms-list">
-        </div>
-        <div>
-            <label for="new">Insert new: </label>
-			<input type="time" name="new" id="new-alarm"><button id="button_add"><img src="img/icons8-plus.png" alt="Add"></button>
-        </div>
-		<div>&nbsp;</div>
-		<div><input type="button" id="save_button" value="Save and close"></div>
-		<div>&nbsp;</div>
-		<div>or, quick load presets for the following schools:</div>
-		<div>&nbsp;</div>
-		<div id="presets"></div>
+	<div class="setup">
+		<div><h1>Countdown timer</h1></div>
+		<div>
+			<textarea id="data" rows="10" cols="40">08:15-08:30=Tutor
+08:30-09:10=Period 1
+09:15-09:55=Period 2
+09:55-10:25=Break
+10:25-11:05=Period 3
+11:10-11:50=Period 4
+11:50-12:20=Break
+12:20-13:00=Period 5
+13:00-15:20=Bespoke</textarea>
+		</div>
+		<div>
+			<input type="button" id="start-button" value="Start">
+		</div>
 	</div>
 
 </body>
 <script type="text/javascript" src="js/howler.min.js"></script>
-<script type="text/javascript" src="js/index.js"></script>
+<script type="text/javascript">
+"use strict";
+
+function timeStringToSeconds(t) {
+	let validTime = /^([0-1][0-9]|2[0-3]):([0-5][0-9])$/;
+	if (!validTime.test(t)) {
+		console.log("Invalid time: ",t)
+		return false;
+	}
+	let parts = t.split(":");
+	let hours = parseInt(parts[0])*60*60;
+	let minutes = parseInt(parts[1])*60;
+	return hours+minutes;
+}
+
+function verifyData(id) {
+	let content = document.querySelector(id).value;
+	console.log(content);
+	let ok = true;
+	let lines = content.split("\n");
+	let data = [];
+	for (let line of lines) {
+		let parts = line.split("=");
+		if (parts.length !== 2) {
+			console.log("Assignment operator missing: ",line)
+			return false;
+		}
+		let label = parts[1];
+		let times = parts[0].split("-");
+		if (times.length !== 2) {
+			console.log("Start and end time required: ",parts[0])
+			return false;
+		}
+		// Validate times
+		let validTime = /^([0-1][0-9]|2[0-3]):([0-5][0-9])$/;
+		if (!validTime.test(times[0])) {
+			console.log("Invalid time: ",times[0])
+			return false;
+		}
+		if (!validTime.test(times[1])) {
+			console.log("Invalid time: ",times[1])			
+			return false;
+		}
+		// Create data object
+		let item = {
+			"startTimestamp": timeStringToSeconds(times[0]),
+			"endTimestamp": timeStringToSeconds(times[1]),
+			"startTime": times[0],
+			"endTime": times[1],
+			"label": label
+		};
+		data.push(item);
+	}
+	return data;
+}
+
+function getTimeNowObject() {
+	var now = new Date();
+	var res = {};
+	res.year = now.getFullYear();
+	res.month = now.getMonth() + 1;
+	res.day = now.getDate();
+	res.hour = now.getHours();
+	res.minute = now.getMinutes();
+	res.second = now.getSeconds();
+	res.dayOfWeek = now.getDay();
+	res.secondsOfDay = res.second + res.minute*60 + res.hour*3600 - 6*3600;
+	console.log(res);
+	return (res);
+}
+
+function secondsToTimeString(s) {
+	function pad( n ) {
+		var s = n.toString();
+		while (s.length < 2) {
+		s = "0" + s;
+		}
+		return(s);
+	}
+	return Math.floor(Number(s/3600)) + ":" + pad(Math.floor(Number((s%3600)/60))) + ":" + pad(Math.floor(Number(s%60)));    
+}
+
+
+function ticktock(data) {
+	// Executed several times per second
+	let now = getTimeNowObject();
+	let item = 0;
+	while (item < data.length-1 && data[item].endTimestamp < now.secondsOfDay) {
+		item++;
+	}
+	if (data[item].startTimestamp <= now.secondsOfDay && data[item].endTimestamp >= now.secondsOfDay) {
+		// Current session
+		let secondsRemaining = data[item].endTimestamp - now.secondsOfDay;
+		document.querySelector(".nowTime").innerHTML = data[item].startTime;
+		document.querySelector(".nowName").innerHTML = data[item].label;
+		document.querySelector(".countdown").innerHTML = secondsToTimeString(secondsRemaining);
+		if (item < data.length-1) {
+			item++;
+			document.querySelector(".nextTime").innerHTML = data[item].startTime;
+			document.querySelector(".nextName").innerHTML = data[item].label;
+		} else {
+			document.querySelector(".nextTime").innerHTML = "";
+			document.querySelector(".nextName").innerHTML = "End of day";
+		}
+	} else if (item < data.length-1) {
+		// Between sessions, still more to come though
+		let secondsRemaining = data[item].startTimestamp - now.secondsOfDay;
+		document.querySelector(".nowTime").innerHTML = "";
+		document.querySelector(".nowName").innerHTML = "";
+		document.querySelector(".countdown").innerHTML = secondsToTimeString(secondsRemaining);
+		document.querySelector(".nextTime").innerHTML = data[item].startTime;
+		document.querySelector(".nextName").innerHTML = data[item].label;
+	} else {
+		// No more sessions, end of day
+		document.querySelector(".nowTime").innerHTML = "";
+		document.querySelector(".nowName").innerHTML = "";
+		document.querySelector(".countdown").innerHTML = "fini";
+		document.querySelector(".nextTime").innerHTML = "";
+		document.querySelector(".nextName").innerHTML = "";
+	}
+}
+
+function start(e) {
+	let data = verifyData("#data");
+	if (data === false) {
+		alert("Countdown items must be formatted as\nhh:mm-hh:mm=label");
+		return;
+	}
+	// Successfully verified. Safe for future use
+	localStorage["countDownData"] = document.querySelector("#data").value;
+	console.log(data);
+	// Change screen display properties
+	document.querySelector(".setup").style = "display:none";
+	document.querySelector(".grid-container").style = "display:grid";
+	// Start clock
+	setInterval(function() { ticktock(data); }, 1000);
+}
+
+if (localStorage["countDownData"]) {
+	document.querySelector("#data").value = localStorage["countDownData"];
+}
+document.querySelector("#start-button").addEventListener("click", start);
+</script>
 </html>
