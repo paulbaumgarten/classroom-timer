@@ -8,9 +8,9 @@ from pprint import pprint
 ####################################
 
 # Starting times for sessions
-# These are for Sha Tin College 2019/2020 - change to suit your needs
 
-times = [
+""" 2019 times
+times = [       # These are for Sha Tin College 2019/2020 - change to suit your needs
     { "session": "Staff mtg",   "time": "08:05" },
     { "session": "Tutor",       "time": "08:15" },
     { "session": "(go to p1)",  "time": "08:35" },
@@ -24,6 +24,20 @@ times = [
     { "session": "(go to p5)",  "time": "14:13" },
     { "session": "Period 5",    "time": "14:17" },
     { "session": "Go home!",    "time": "15:20" },
+]
+"""
+times = [# These are for Sha Tin College 2020/2021 (truncated) - change to suit your needs
+    { "session": "Tutor",       "time": "08:15" },
+    { "session": "Period 1",    "time": "08:30" },
+    { "session": "(go to p2)",  "time": "09:10" },
+    { "session": "Period 2",    "time": "09:15" },
+    { "session": "Break",       "time": "09:55" },
+    { "session": "Period 3",    "time": "10:25" },
+    { "session": "(go to p4)",  "time": "11:05" },
+    { "session": "Period 4",    "time": "11:10" },
+    { "session": "Break",       "time": "11:50" },
+    { "session": "Period 5",    "time": "12:20" },
+    { "session": "Bespoke",     "time": "13:00" },
 ]
 
 ORANGE_ALERT = 300  # seconds
@@ -42,7 +56,7 @@ class TimerApp():
         self.times = times
         self.keep_ticking = True
         self.window.title("Classroom timer by Paul Baumgarten")
-        self.window.geometry("180x120")
+        self.window.geometry("220x150")
         self.window.attributes('-alpha', 0.8)
         self.window.configure(background='black')
         self.window.protocol("WM_DELETE_WINDOW", self.close)
@@ -74,7 +88,6 @@ class TimerApp():
     
     def close(self):
         self.keep_ticking = False
-        self.window.quit()
     
     def tick(self):
         now = datetime.now()
@@ -122,6 +135,8 @@ class TimerApp():
         # Queue up the next thread tick
         if self.keep_ticking:
             threading.Timer(1, self.tick).start()
+        else:
+            self.window.quit()
 
 ####################################
 # Main
