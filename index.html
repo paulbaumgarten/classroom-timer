@@ -151,7 +151,7 @@ function getTimeNowObject() {
 	res.minute = now.getMinutes();
 	res.second = now.getSeconds();
 	res.dayOfWeek = now.getDay();
-	res.secondsOfDay = res.second + res.minute*60 + res.hour*3600 - 6*3600;
+	res.secondsOfDay = res.second + res.minute*60 + res.hour*3600;
 	console.log(res);
 	return (res);
 }
