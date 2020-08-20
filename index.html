@@ -34,6 +34,11 @@ body {
 	font-size: 20vw;
 }
 
+textarea {
+   font-family: inherit;
+   font-size: 14pt;
+}
+
 /* Layout */
 .grid-container {
   display: grid;
@@ -54,6 +59,12 @@ body {
 .nextTime { grid-area: nextTime; }
 
 .nextName { grid-area: nextName; }
+
+.settings {
+	position: fixed;
+	right: 0;
+	bottom: 0;
+}
 	</style>
 </head>
 <body>
@@ -81,6 +92,9 @@ body {
 		<div>
 			<input type="button" id="start-button" value="Start">
 		</div>
+	</div>
+	<div class="settings">
+		<button id="settings-button" style="background-color: #333333;"><img src="img/icons8-settings.png" style="border:0; width: 5vw; height: 5vw"></button>
 	</div>
 
 </body>
@@ -225,7 +239,12 @@ function start(e) {
 
 if (localStorage["countDownData"]) {
 	document.querySelector("#data").value = localStorage["countDownData"];
+	start();
 }
 document.querySelector("#start-button").addEventListener("click", start);
+document.querySelector("#settings-button").addEventListener("click", function() {
+	document.querySelector(".setup").style = "display:block";
+	document.querySelector(".grid-container").style = "display:none";
+});
 </script>
 </html>
